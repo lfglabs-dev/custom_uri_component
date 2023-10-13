@@ -1,0 +1,13 @@
+[package]
+name = "custom_uri"
+version = "0.1.0"
+authors = ["th0rgal <thomas@starknet.id>"]
+description = "Manage custom URI in a contract storage"
+repository = "https://github.com/starknet-id/custom_uri_component"
+
+[dependencies]
+starknet = "2.3.0-rc0"
+
+[lib]
+sierra = true
+casm = false
