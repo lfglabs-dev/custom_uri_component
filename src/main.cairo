@@ -8,7 +8,6 @@ mod custom_uri_component {
     use starknet::get_caller_address;
     use custom_uri::interface::IInternalCustomURI;
     use super::{append_to_str, div_rec};
-    use debug::PrintTrait;
 
     #[storage]
     struct Storage {

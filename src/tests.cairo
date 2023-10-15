@@ -1,8 +1,6 @@
 use custom_uri::main::custom_uri_component::{InternalImpl, component_state_for_testing};
 use custom_uri::main::custom_uri_component;
 use custom_uri::main::append_to_str;
-use debug::PrintTrait;
-
 
 #[starknet::contract]
 mod DummyContract {
