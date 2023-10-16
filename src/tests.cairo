@@ -210,3 +210,13 @@ fn test_appending_chars() {
         'wrong string sum'
     );
 }
+
+#[test]
+#[available_gas(1500000)]
+fn test_custom_uri() {
+    let mut uri_component: TestingState = Default::default();
+
+    uri_component.set_base_uri(array!['https://my_api?token_id='].span());
+    let uri = uri_component.get_uri(123456789);
+    assert(uri == array!['https://my_api?token_id=1234567', '89'], 'invalid URI');
+}
