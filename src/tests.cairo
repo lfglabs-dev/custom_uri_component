@@ -80,6 +80,7 @@ fn test_appending_id() {
         uri == array!['https://api.starknet.id/uri?id=', '1000000000000000000000000000000'],
         'wrong output uri 3'
     );
+
     // 31+ chars test
     let base_uri = array!['https://api.starknet.id/uri?id='];
     uri_component.set_base_uri(base_uri.span());
@@ -87,6 +88,15 @@ fn test_appending_id() {
     assert(
         uri == array!['https://api.starknet.id/uri?id=', '1000000000000000000000000000000', '234'],
         'wrong output uri'
+    );
+
+    // not 31 char basis
+    let base_uri = array!['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'];
+    uri_component.set_base_uri(base_uri.span());
+    let uri = uri_component.get_uri(123);
+    assert(
+        uri == array!['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb1', '23'],
+        'wrong output uri 4'
     );
 }
 
