@@ -1,5 +1,6 @@
 use custom_uri::main::custom_uri_component::{InternalImpl, component_state_for_testing};
 use custom_uri::main::custom_uri_component;
+use custom_uri::main::append_to_str;
 
 #[starknet::contract]
 mod DummyContract {
@@ -34,9 +35,188 @@ impl TestingStateDefault of Default<TestingState> {
 }
 
 #[test]
-#[available_gas(200000)]
-fn test_ownable_initializer() {
+#[available_gas(2000000)]
+fn test_base_uri() {
     let mut uri_component: TestingState = Default::default();
+
+    let base_uri = array!['a', 'b', 'c'];
+    uri_component.set_base_uri(base_uri.span());
+    let read_base_uri = uri_component.get_base_uri();
+    assert(base_uri == read_base_uri, 'unexpected base_uri 1');
+
+    // test uri of 31 chars
     let base_uri = array!['https://api.starknet.id/uri?id='];
     uri_component.set_base_uri(base_uri.span());
+    let read_base_uri = uri_component.get_base_uri();
+    assert(base_uri == read_base_uri, 'unexpected base_uri 2');
+}
+
+
+#[test]
+#[available_gas(40000000)]
+fn test_appending_id() {
+    let mut uri_component: TestingState = Default::default();
+
+    // basic test
+    let base_uri = array!['https://api.starknet.id/uri?id='];
+    uri_component.set_base_uri(base_uri.span());
+    let uri = uri_component.get_uri(12345);
+    assert(uri == array!['https://api.starknet.id/uri?id=', '12345'], 'wrong output uri');
+
+    // low/high test
+    let base_uri = array!['https://api.starknet.id/uri?id='];
+    uri_component.set_base_uri(base_uri.span());
+    let uri = uri_component.get_uri(3331111111111111111);
+    assert(
+        uri == array!['https://api.starknet.id/uri?id=', '3331111111111111111'],
+        'wrong output uri 2'
+    );
+
+    // 31 chars test
+    let base_uri = array!['https://api.starknet.id/uri?id='];
+    uri_component.set_base_uri(base_uri.span());
+    let uri = uri_component.get_uri(1000000000000000000000000000000);
+    assert(
+        uri == array!['https://api.starknet.id/uri?id=', '1000000000000000000000000000000'],
+        'wrong output uri 3'
+    );
+
+    // 31+ chars test
+    let base_uri = array!['https://api.starknet.id/uri?id='];
+    uri_component.set_base_uri(base_uri.span());
+    let uri = uri_component.get_uri(1000000000000000000000000000000234);
+    assert(
+        uri == array!['https://api.starknet.id/uri?id=', '1000000000000000000000000000000', '234'],
+        'wrong output uri'
+    );
+
+    // not 31 char basis
+    let base_uri = array!['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'];
+    uri_component.set_base_uri(base_uri.span());
+    let uri = uri_component.get_uri(123);
+    assert(
+        uri == array!['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb1', '23'],
+        'wrong output uri 4'
+    );
+}
+
+
+#[test]
+#[available_gas(8000000)]
+fn test_appending_chars() {
+    // not many digits to add
+    let mut output = Default::default();
+    append_to_str(ref output, 'abcd', array!['e', 'f', 'g'].span());
+    assert(output == array!['abcdefg'], 'wrong string sum');
+
+    // 31 initially
+    let mut output = Default::default();
+    append_to_str(ref output, 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', array!['e', 'f', 'g'].span());
+    assert(output == array!['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'efg'], 'wrong string sum');
+
+    // more than 31 to add
+    let mut output = Default::default();
+    append_to_str(ref output, 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', array!['e', 'f', 'g'].span());
+    assert(output == array!['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaae', 'fg'], 'wrong string sum');
+
+    // adding 31 b
+    let mut output = Default::default();
+    append_to_str(
+        ref output,
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        array![
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+        ]
+            .span()
+    );
+    assert(
+        output == array!['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'],
+        'wrong string sum aza'
+    );
+
+    // adding 32 b
+    let mut output = Default::default();
+    append_to_str(
+        ref output,
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        array![
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b',
+            'b'
+        ]
+            .span()
+    );
+    assert(
+        output == array!['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 'b'],
+        'wrong string sum'
+    );
+}
+
+#[test]
+#[available_gas(1500000)]
+fn test_custom_uri() {
+    let mut uri_component: TestingState = Default::default();
+
+    uri_component.set_base_uri(array!['https://my_api?token_id='].span());
+    let uri = uri_component.get_uri(123456789);
+    assert(uri == array!['https://my_api?token_id=1234567', '89'], 'invalid URI');
 }
