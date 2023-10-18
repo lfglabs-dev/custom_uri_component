@@ -83,6 +83,7 @@ fn append_to_str(ref str: Array<felt252>, last_field: u256, to_add: Span<felt252
     let ascii_length: NonZero<u256> = 256_u256.try_into().unwrap();
     let mut i = 0;
     let mut shifted_field = last_field;
+    // find free space in last text field
     loop {
         let (_shifted_field, char) = DivRem::div_rem(shifted_field, ascii_length);
         shifted_field = _shifted_field;
@@ -100,7 +101,7 @@ fn append_to_str(ref str: Array<felt252>, last_field: u256, to_add: Span<felt252
     let mut new_field = 0;
     let mut shift = 1;
     let mut i = free_space;
-
+    // add digits to the last text field
     loop {
         if free_space == 0 {
             break;
@@ -123,7 +124,7 @@ fn append_to_str(ref str: Array<felt252>, last_field: u256, to_add: Span<felt252
     let mut new_field_shift = 1;
     let mut new_field = 0;
     let mut j = i + 30;
-
+    // keep adding digits by chunks of 31
     loop {
         match to_add.get(j) {
             Option::Some(char) => {
