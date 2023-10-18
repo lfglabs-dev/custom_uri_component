@@ -44,7 +44,7 @@ fn test_base_uri() {
     let read_base_uri = uri_component.get_base_uri();
     assert(base_uri == read_base_uri, 'unexpected base_uri 1');
 
-    // make sure the 0 is written at the end
+    // test uri of 31 chars
     let base_uri = array!['https://api.starknet.id/uri?id='];
     uri_component.set_base_uri(base_uri.span());
     let read_base_uri = uri_component.get_base_uri();
