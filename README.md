@@ -8,7 +8,7 @@ You can then get a URL with a dynamically appended number at the end with `get_u
 with `get_uri(12345)`, you should get `[ 'https://my.example.api/get_toke', 'n_uri?uri=12345' ]` in a 
 minimal amount of steps.
 
-## How to install
+## How to use
 
 Install the component through scarb by specifying it in your dependencies. I recommend to specify a commit with rev.
 ```toml
