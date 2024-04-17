@@ -6,7 +6,7 @@ description = "Manage custom URI in a contract storage"
 repository = "https://github.com/starknet-id/custom_uri_component"
 
 [dependencies]
-starknet = "2.5.3"
+starknet = "2.6.3"
 
 [lib]
 sierra = true
